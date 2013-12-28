@@ -27,9 +27,9 @@ package com.flowpowered.filesystem;
  * Called when a resource is non-existant in a specified location.
  */
 public class ResourceNotFoundException extends Exception {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public ResourceNotFoundException(String resource) {
-        super("Cannot find: " + resource);
-    }
+	public ResourceNotFoundException(String resource) {
+		super("Cannot find: " + resource);
+	}
 }
