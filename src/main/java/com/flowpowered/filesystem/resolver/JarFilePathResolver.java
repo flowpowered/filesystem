@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JarFilePathResolver implements ResourcePathResolver {
@@ -43,7 +43,7 @@ public class JarFilePathResolver implements ResourcePathResolver {
 
     public JarFilePathResolver(File directory) {
         this.directory = directory;
-        this.logger = LogManager.getLogger(getClass().getSimpleName());
+        this.logger = LoggerFactory.getLogger(getClass().getSimpleName());
     }
 
     public JarFilePathResolver(File directory, Logger logger) {
@@ -67,13 +67,13 @@ public class JarFilePathResolver implements ResourcePathResolver {
             f = getJar(host);
             b = f.getJarEntry(path.substring(1)) != null;
         } catch (IOException e) {
-            logger.catching(e);
+            this.logger.error("Caught:", e); // TODO: More descriptive message?
         } finally {
             if (f != null) {
                 try {
                     f.close();
                 } catch (IOException e) {
-                    logger.catching(e);
+                    this.logger.error("Caught when cosing jar:", e);
                 }
             }
         }
@@ -98,7 +98,7 @@ public class JarFilePathResolver implements ResourcePathResolver {
             }
             return f.getInputStream(entry);
         } catch (IOException e) {
-            logger.catching(e);
+            this.logger.error("Caught:", e); // TODO: More descriptive message?
             return null;
         }
     }
@@ -131,13 +131,13 @@ public class JarFilePathResolver implements ResourcePathResolver {
             }
             return list.toArray(new String[list.size()]);
         } catch (IOException e) {
-            logger.catching(e);
+            this.logger.error("Caught:", e); // TODO: More descriptive message?
         } finally {
             if (jar != null) {
                 try {
                     jar.close();
                 } catch (IOException e) {
-                    logger.catching(e);
+                    this.logger.error("Caught:", e);
                 }
             }
         }

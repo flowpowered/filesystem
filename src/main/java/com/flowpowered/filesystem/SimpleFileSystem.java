@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.flowpowered.filesystem.resolver.ResourcePathResolver;
 
 public abstract class SimpleFileSystem implements FileSystem {
-    private static final Logger LOGGER = LogManager.getLogger(SimpleFileSystem.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleFileSystem.class); // TODO: Make it non-static and accept it in constructor.
 
     protected final Set<ResourceLoader> loaders = new HashSet<>();
     protected final Map<URI, Object> loadedResources = new HashMap<>();
@@ -164,7 +164,7 @@ public abstract class SimpleFileSystem implements FileSystem {
             throw new IllegalArgumentException("An exception occurred when loading the resource at " + uri.toString(), e);
         } catch (ResourceNotFoundException e) {
             // not found in path, try to load fallback resource
-            LOGGER.warn("No resource found at " + uri.toString() + ", loading fallback...");
+            LOGGER.warn("No resource found at " + uri.toString() + ", loading fallback..."); // TODO: Use parametrized message instead of string concatation.
             String fallback = getLoader(uri.getScheme()).getFallback(); // assumption: loader is never null here
             if (fallback == null) {
                 throw new IllegalStateException("No resource found at " + uri.toString() + " and has no fallback resource.");

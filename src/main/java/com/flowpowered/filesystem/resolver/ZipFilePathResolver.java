@@ -32,15 +32,15 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ZipFilePathResolver extends FilePathResolver {
     private final Logger logger;
 
     public ZipFilePathResolver(String path) {
         super(path);
-        this.logger = LogManager.getLogger(getClass().getSimpleName());
+        this.logger = LoggerFactory.getLogger(getClass().getSimpleName());
     }
 
     public ZipFilePathResolver(String path, Logger logger) {
@@ -67,13 +67,13 @@ public class ZipFilePathResolver extends FilePathResolver {
             }
             b = f.getEntry(path.substring(1)) != null;
         } catch (IOException e) {
-            logger.catching(e);
+            this.logger.error("Caught:", e); // TODO: More descriptive message?
         } finally {
             if (f != null) {
                 try {
                     f.close();
                 } catch (IOException e) {
-                    logger.catching(e);
+                    this.logger.error("Caught:", e);
                 }
             }
         }
@@ -93,7 +93,7 @@ public class ZipFilePathResolver extends FilePathResolver {
             }
             return f.getInputStream(entry);
         } catch (IOException e) {
-            logger.catching(e);
+            this.logger.error("Caught:", e); // TODO: More descriptive message?
             return null;
         }
     }
@@ -121,13 +121,13 @@ public class ZipFilePathResolver extends FilePathResolver {
             }
             return list.toArray(new String[list.size()]);
         } catch (IOException e) {
-            logger.catching(e);
+            this.logger.error("Caught:", e); // TODO: More descriptive message?
         } finally {
             if (zip != null) {
                 try {
                     zip.close();
                 } catch (IOException e) {
-                    logger.catching(e);
+                    this.logger.error("Caught:", e);
                 }
             }
         }
