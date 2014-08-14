@@ -1,7 +1,7 @@
 /*
  * This file is part of Flow Filesystem, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2013 Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2013 Spout LLC <https://spout.org/>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,56 +31,56 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Represents something that loads a resource.
  */
 public abstract class ResourceLoader {
-	private final String scheme;
-	private final String fallback;
+    private final String scheme;
+    private final String fallback;
 
-	public ResourceLoader(String scheme, String fallback) {
-		this.scheme = scheme;
-		this.fallback = fallback;
-	}
+    public ResourceLoader(String scheme, String fallback) {
+        this.scheme = scheme;
+        this.fallback = fallback;
+    }
 
-	public ResourceLoader(String scheme) {
-		this(scheme, null);
-	}
+    public ResourceLoader(String scheme) {
+        this(scheme, null);
+    }
 
-	/**
-	 * Returns an {@link Object} loaded from a specified {@link InputStream}.
-	 *
-	 * @param in input stream to load object from
-	 * @return loaded object
-	 */
-	public abstract Object load(InputStream in);
+    /**
+     * Returns an {@link Object} loaded from a specified {@link InputStream}.
+     *
+     * @param in input stream to load object from
+     * @return loaded object
+     */
+    public abstract Object load(InputStream in);
 
-	/**
-	 * Returns the scheme that this loader represents. This scheme will allow developers to choose to load an object from the loader by specifying this scheme in their specified {@link java.net.URI}.
-	 *
-	 * @return scheme
-	 */
-	public String getScheme() {
-		return scheme;
-	}
+    /**
+     * Returns the scheme that this loader represents. This scheme will allow developers to choose to load an object from the loader by specifying this scheme in their specified {@link java.net.URI}.
+     *
+     * @return scheme
+     */
+    public String getScheme() {
+        return scheme;
+    }
 
-	/**
-	 * Returns the fallback resource to load if the resource is not found.
-	 *
-	 * @return fallback resource
-	 */
-	public String getFallback() {
-		return fallback;
-	}
+    /**
+     * Returns the fallback resource to load if the resource is not found.
+     *
+     * @return fallback resource
+     */
+    public String getFallback() {
+        return fallback;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof ResourceLoader && ((ResourceLoader) obj).scheme.equalsIgnoreCase(scheme);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ResourceLoader && ((ResourceLoader) obj).scheme.equalsIgnoreCase(scheme);
+    }
 
-	@Override
-	public String toString() {
-		return "ResourceLoader(" + scheme + ")";
-	}
+    @Override
+    public String toString() {
+        return "ResourceLoader(" + scheme + ")";
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder().append(scheme).build();
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(scheme).build();
+    }
 }

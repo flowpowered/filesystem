@@ -1,7 +1,7 @@
 /*
  * This file is part of Flow Filesystem, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2013 Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2013 Spout LLC <https://spout.org/>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@ package com.flowpowered.filesystem;
  * Called when a resource is non-existant in a specified location.
  */
 public class ResourceNotFoundException extends Exception {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ResourceNotFoundException(String resource) {
-		super("Cannot find: " + resource);
-	}
+    public ResourceNotFoundException(String resource) {
+        super("Cannot find: " + resource);
+    }
 }
