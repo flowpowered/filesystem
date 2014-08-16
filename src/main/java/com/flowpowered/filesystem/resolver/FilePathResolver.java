@@ -29,19 +29,16 @@ import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FilePathResolver implements ResourcePathResolver {
-    protected final String directory;
+    protected final Path directory;
 
-    public FilePathResolver(String path) {
+    public FilePathResolver(Path path) {
         this.directory = path;
     }
 
     public Path getPath(String host, String path) {
-        return Paths.get(directory, host, path);
+        return directory.resolve(host).resolve(path);
     }
 
     @Override
@@ -69,27 +66,21 @@ public class FilePathResolver implements ResourcePathResolver {
     }
 
     @Override
-    public String[] list(String host, String path) {
-        DirectoryStream<Path> stream;
+    public DirectoryStream<Path> list(String host, String path) {
         try {
-            stream = Files.newDirectoryStream(getPath(host, path), new DirectoryStream.Filter<Path>() {
+            return Files.newDirectoryStream(getPath(host, path), new DirectoryStream.Filter<Path>() {
                 @Override
                 public boolean accept(Path entry) throws IOException {
                     return Files.isRegularFile(entry);
                 }
             });
         } catch (IOException ex) {
-            return new String[0];
+            return null;
         }
-        List<String> list = new ArrayList<>();
-        for (Path local : stream) {
-            list.add(local.getFileName().toString());
-        }
-        return list.toArray(new String[list.size()]);
     }
 
     @Override
-    public String[] list(URI uri) {
+    public DirectoryStream<Path> list(URI uri) {
         return list(uri.getHost(), uri.getPath());
     }
 }

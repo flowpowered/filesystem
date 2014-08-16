@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -205,10 +206,9 @@ public abstract class SimpleFileSystem implements FileSystem {
             throw new IllegalArgumentException("Could not resolve path '" + uri.toString() + "'");
         }
 
-        String[] files = resolver.list(uri);
         List<R> resources = new ArrayList<>();
-        for (String file : files) {
-            resources.add((R) getResource(uri.getScheme() + "://" + uri.getHost() + uri.getPath() + file));
+        for (Path file : resolver.list(uri)) {
+            resources.add((R) getResource(uri.getScheme() + "://" + uri.getHost() + uri.getPath() + file.getFileName().toString()));
         }
         return resources;
     }

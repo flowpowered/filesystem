@@ -24,115 +24,27 @@
 package com.flowpowered.filesystem.resolver;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ZipFilePathResolver extends FilePathResolver {
-    private final Logger logger;
 
-    public ZipFilePathResolver(String path) {
+    public ZipFilePathResolver(Path path) {
         super(path);
-        this.logger = LoggerFactory.getLogger(getClass().getSimpleName());
     }
 
-    public ZipFilePathResolver(String path, Logger logger) {
-        super(path);
-        this.logger = logger;
-    }
-
-    public ZipFile getZip(String host) throws IOException {
-        Path file = Paths.get(directory).resolve(host + ".zip");
-        if (Files.exists(file)) {
-            return new ZipFile(file.toFile());
-        }
-        return null;
+    protected String getFullHost(String host) {
+        return host + ".zip";
     }
 
     @Override
-    public boolean existsInPath(String host, String path) {
-        ZipFile f = null;
-        boolean b = false;
-        try {
-            f = getZip(host);
-            if (f == null) {
-                return false;
-            }
-            b = f.getEntry(path.substring(1)) != null;
-        } catch (IOException e) {
-            this.logger.error("Caught:", e); // TODO: More descriptive message?
-        } finally {
-            if (f != null) {
-                try {
-                    f.close();
-                } catch (IOException e) {
-                    this.logger.error("Caught:", e);
-                }
-            }
+    public Path getPath(String host, String path) {
+        Path zip = directory.resolve(getFullHost(host));
+        try (FileSystem zipfs = FileSystems.newFileSystem(zip, null)) {
+            return zipfs.getPath(path);
+        } catch (IOException ex) {
+            throw new RuntimeException("Error in getting path of ZipFilePathResolver", ex);
         }
-        return b;
-    }
-
-    @Override
-    public InputStream getStream(String host, String path) {
-        try {
-            ZipFile f = getZip(host);
-            if (f == null) {
-                return null;
-            }
-            ZipEntry entry = f.getEntry(path.substring(1));
-            if (entry == null) {
-                return null;
-            }
-            return f.getInputStream(entry);
-        } catch (IOException e) {
-            this.logger.error("Caught:", e); // TODO: More descriptive message?
-            return null;
-        }
-    }
-
-    @Override
-    public String[] list(String host, String path) {
-        ZipFile zip = null;
-        try {
-            zip = getZip(host);
-            if (zip == null) {
-                throw new IllegalArgumentException("Specified ZipFile does not exist.");
-            }
-            // iterate through the zip's entries
-            Enumeration<? extends ZipEntry> entries = zip.entries();
-            List<String> list = new ArrayList<>();
-            path = path.substring(1);
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                String name = entry.getName();
-                // we can't load directories, no point in returning them
-                // verify the entry is within the given path
-                if (!entry.isDirectory() && name.startsWith(path)) {
-                    list.add(name.replaceFirst(path, ""));
-                }
-            }
-            return list.toArray(new String[list.size()]);
-        } catch (IOException e) {
-            this.logger.error("Caught:", e); // TODO: More descriptive message?
-        } finally {
-            if (zip != null) {
-                try {
-                    zip.close();
-                } catch (IOException e) {
-                    this.logger.error("Caught:", e);
-                }
-            }
-        }
-        return null;
     }
 }

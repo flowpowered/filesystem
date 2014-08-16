@@ -25,6 +25,8 @@ package com.flowpowered.filesystem.resolver;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Path;
 
 public interface ResourcePathResolver {
     /**
@@ -68,7 +70,7 @@ public interface ResourcePathResolver {
      * @param path within the host
      * @return array of the names of the files within the specified path
      */
-    public String[] list(String host, String path);
+    public DirectoryStream<Path> list(String host, String path);
 
     /**
      * Lists all files in the specified directory within the host. The specified path must end in a '/' to identify the path as a directory.
@@ -76,5 +78,5 @@ public interface ResourcePathResolver {
      * @param uri including the host and path of the resource
      * @return array of the names of the files within the specified path
      */
-    public String[] list(URI uri);
+    public DirectoryStream<Path> list(URI uri);
 }
