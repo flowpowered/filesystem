@@ -23,11 +23,13 @@
  */
 package com.flowpowered.filesystem.resolver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,13 +40,13 @@ public class FilePathResolver implements ResourcePathResolver {
         this.directory = path;
     }
 
-    public File getFile(String host, String path) {
-        return new File(directory + File.separatorChar + host, path);
+    public Path getPath(String host, String path) {
+        return Paths.get(directory, host, path);
     }
 
     @Override
     public boolean existsInPath(String host, String path) {
-        return getFile(host, path).exists();
+        return Files.exists(getPath(host, path));
     }
 
     @Override
@@ -55,8 +57,8 @@ public class FilePathResolver implements ResourcePathResolver {
     @Override
     public InputStream getStream(String host, String path) {
         try {
-            return new FileInputStream(getFile(host, path));
-        } catch (FileNotFoundException e) {
+            return Files.newInputStream(getPath(host, path));
+        } catch (IOException ex) {
             return null;
         }
     }
@@ -68,12 +70,20 @@ public class FilePathResolver implements ResourcePathResolver {
 
     @Override
     public String[] list(String host, String path) {
+        DirectoryStream<Path> stream;
+        try {
+            stream = Files.newDirectoryStream(getPath(host, path), new DirectoryStream.Filter<Path>() {
+                @Override
+                public boolean accept(Path entry) throws IOException {
+                    return Files.isRegularFile(entry);
+                }
+            });
+        } catch (IOException ex) {
+            return new String[0];
+        }
         List<String> list = new ArrayList<>();
-        for (File file : getFile(host, path).listFiles()) {
-            // we can't load directories, no point in returning them
-            if (file.isFile()) {
-                list.add(file.getName());
-            }
+        for (Path local : stream) {
+            list.add(local.getFileName().toString());
         }
         return list.toArray(new String[list.size()]);
     }
@@ -83,4 +93,3 @@ public class FilePathResolver implements ResourcePathResolver {
         return list(uri.getHost(), uri.getPath());
     }
 }
-

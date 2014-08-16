@@ -23,10 +23,11 @@
  */
 package com.flowpowered.filesystem.resolver;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -39,24 +40,24 @@ import org.slf4j.LoggerFactory;
 
 public class JarFilePathResolver implements ResourcePathResolver {
     private final Logger logger;
-    private final File directory;
+    private final Path directory;
 
-    public JarFilePathResolver(File directory) {
+    public JarFilePathResolver(Path directory) {
         this.directory = directory;
         this.logger = LoggerFactory.getLogger(getClass().getSimpleName());
     }
 
-    public JarFilePathResolver(File directory, Logger logger) {
+    public JarFilePathResolver(Path directory, Logger logger) {
         this.directory = directory;
         this.logger = logger;
     }
 
     public JarFile getJar(String host) throws IOException {
-        File jar = new File(this.directory, host + ".jar");
-        if (!jar.exists()) {
+        Path jar = directory.resolve(host + ".jar");
+        if (!Files.exists(jar)) {
             return null;
         }
-        return new JarFile(jar);
+        return new JarFile(jar.toFile());
     }
 
     @Override

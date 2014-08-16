@@ -23,9 +23,11 @@
  */
 package com.flowpowered.filesystem.resolver;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -49,9 +51,9 @@ public class ZipFilePathResolver extends FilePathResolver {
     }
 
     public ZipFile getZip(String host) throws IOException {
-        File file = new File(this.directory + File.separatorChar + host + ".zip");
-        if (file.exists()) {
-            return new ZipFile(file);
+        Path file = Paths.get(directory).resolve(host + ".zip");
+        if (Files.exists(file)) {
+            return new ZipFile(file.toFile());
         }
         return null;
     }
